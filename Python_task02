@@ -1,51 +1,44 @@
 from PIL import Image
 
-def encrypt_image(image_path, key, save_path="encrypted_image.png"):
-    try:
-        image = Image.open(image_path)
-        encrypted_image = image.copy()
-        width, height = image.size
-        for y in range(height):
-            for x in range(width):
-                pixel = image.getpixel((x, y))
-                encrypted_pixel = tuple((p + key) % 256 for p in pixel)
-                encrypted_image.putpixel((x, y), encrypted_pixel)
-        encrypted_image.save(save_path)
-        print(f"The image has been successfully encrypted and saved as {save_path}!")
-    except Exception as e:
-        print(f"An error occurred during encryption: {e}")
+def apply_image_encryption(image_path, key_value):
+    img = Image.open(image_path)
+    encrypted_img = img.copy()
+    img_width, img_height = img.size
+    for y in range(img_height):
+        for x in range(img_width):
+            original_pixel = img.getpixel((x, y))
+            new_pixel = tuple((component + key_value) % 256 for component in original_pixel)
+            encrypted_img.putpixel((x, y), new_pixel)
+    encrypted_img.save("encrypted_output.png")
+    print("Encryption complete! The encrypted image has been saved as 'encrypted_output.png'.")
 
-def decrypt_image(image_path, key, save_path="decrypted_image.png"):
-    try:
-        encrypted_image = Image.open(image_path)
-        decrypted_image = encrypted_image.copy()
-        width, height = encrypted_image.size
-        for y in range(height):
-            for x in range(width):
-                encrypted_pixel = encrypted_image.getpixel((x, y))
-                decrypted_pixel = tuple((p - key) % 256 for p in encrypted_pixel)
-                decrypted_image.putpixel((x, y), decrypted_pixel)
-        decrypted_image.save(save_path)
-        print(f"The image has been successfully decrypted and saved as {save_path}!")
-    except Exception as e:
-        print(f"An error occurred during decryption: {e}")
+def apply_image_decryption(image_path, key_value):
+    encrypted_img = Image.open(image_path)
+    decrypted_img = encrypted_img.copy()
+    img_width, img_height = encrypted_img.size
+    for y in range(img_height):
+        for x in range(img_width):
+            encrypted_pixel = encrypted_img.getpixel((x, y))
+            original_pixel = tuple((component - key_value) % 256 for component in encrypted_pixel)
+            decrypted_img.putpixel((x, y), original_pixel)
+    decrypted_img.save("decrypted_output.png")
+    print("Decryption complete! The decrypted image has been saved as 'decrypted_output.png'.")
 
 def main():
-    print("1. Encrypt an Image")
-    print("2. Decrypt an Image")
-    choice = int(input("Select an option: "))
-    if choice == 1:
-        image_path = input("Enter the path of the image to be encrypted: ")
-        key = int(input("Enter the encryption key (an integer): "))
-        save_path = input("Enter the path to save the encrypted image (default: encrypted_image.png): ") or "encrypted_image.png"
-        encrypt_image(image_path, key, save_path)
-    elif choice == 2:
-        image_path = input("Enter the path of the image to be decrypted: ")
-        key = int(input("Enter the decryption key (an integer): "))
-        save_path = input("Enter the path to save the decrypted image (default: decrypted_image.png): ") or "decrypted_image.png"
-        decrypt_image(image_path, key, save_path)
+    print("Select an option:")
+    print("1. Encrypt an image")
+    print("2. Decrypt an image")
+    user_choice = int(input("Enter your choice (1 or 2): "))
+    if user_choice == 1:
+        img_path = input("Please provide the path to the image for encryption: ")
+        key = int(input("Please enter an encryption key (integer): "))
+        apply_image_encryption(img_path, key)
+    elif user_choice == 2:
+        img_path = input("Please provide the path to the image for decryption: ")
+        key = int(input("Please enter the decryption key (integer): "))
+        apply_image_decryption(img_path, key)
     else:
-        print("Invalid option selected.")
+        print("Invalid choice. Please enter either 1 or 2.")
 
 if __name__ == "__main__":
     main()
